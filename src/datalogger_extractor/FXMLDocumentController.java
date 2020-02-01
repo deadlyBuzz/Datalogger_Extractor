@@ -5,13 +5,16 @@
  */
 package datalogger_extractor;
 
-import java.io.File;
+import java.io.*;
+import static java.lang.Boolean.TRUE;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
@@ -19,6 +22,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -28,6 +32,18 @@ public class FXMLDocumentController implements Initializable{
     Stage parentStage;
     File l5kFile;
     
+    String regexTagMatch = "^[\t]+TAG";
+    String regexEndTagMatch = "^[\t]+END_TAG";
+    String findMatch = "^\\t+([a_zA-Z0-9_]+)\\W: udt_AOI_RX1_DataLogger_ResultSet (\\(Description := ([^)]+)\\))?.+";
+    String endMatch = "^\\t+[^\\]]+\\]\\];";
+    String programName = "^\\t*PROGRAM\\W+([a-zA-Z0-9_]+).+";
+    ArrayList<String> masterData;
+    
+    StringBuilder masterOutput = new StringBuilder();
+    
+    @FXML
+    private Button button2;
+    
     @FXML
     private Label label;
     
@@ -36,15 +52,116 @@ public class FXMLDocumentController implements Initializable{
     
     @FXML
     private void handleButtonAction(ActionEvent event) {
+        // Default Handle button action event - replaced with makeItSoAction
         System.out.println("You clicked me!");
         label.setText("Hello World!");
     }
     
     @FXML
     private void makeItSoAction(ActionEvent event){
-        
+        // Have a look at https://github.com/deadlyBuzz/STLAnalyser/blob/master/src/stlanalyser/stlAnalyserWindow.java DoInBackground()
+        // Opens a file via a reader and iterates through it line by line.
+        String readLine = new String();
+        StringBuilder objString = new StringBuilder();
+        boolean tagMode = false;
+        boolean findMode = false;        
+        Integer entryNumber = 1;
+        Integer lineNumber = 0;
+        Integer caseNo = 0;
+        String progName = "";
+        masterOutput = new StringBuilder();
+        try{
+            BufferedReader fileReader;
+            fileReader = new BufferedReader(new FileReader(l5kFile));
+            readLine = fileReader.readLine();            
+            masterData = new ArrayList<>();
+            
+            do{
+                if(readLine!=null){
+                    lineNumber++;
+//                    if(lineNumber==67564)
+//                        System.out.println("debug");
+                    if(readLine.matches(programName))
+                        progName = readLine.replaceAll(programName, "$1").concat(":");
+                    switch(caseNo){
+                        // Static operation - Looking for a tag region
+                        case 0:
+                        // Have read a line into the system.
+                            if(readLine.matches(regexTagMatch)){
+                                caseNo = 1;
+                            }
+                            break;
+                        // Found Tag Region - Looking for either end of Tag region
+                        // or a new tag to find.
+                        case 1:
+                            if(readLine.matches(regexEndTagMatch))
+                                caseNo = 0;
+                            else if(readLine.matches(findMatch)){
+                                caseNo = 2;
+                                objString.append(entryNumber.toString().concat(" ").concat(progName));                                
+                                objString.append(readLine.replaceAll("\t", ""));
+                                entryNumber++;
+                            }
+                            break;
+                        //Found the start of the tag - start building the string and search for the end string
+                        case 2:
+                            if(readLine.matches(regexEndTagMatch)){
+                                caseNo = 0;
+                                //System.out.println(objString.toString());                            
+                                dataLogger_Obj thisObj = new dataLogger_Obj(objString.toString());
+                                System.out.println(thisObj.getCSVData());
+                                //masterOutput.append(thisObj.getCSVData());
+                                //masterOutput.append("\n");
+                                masterData.add(thisObj.getCSVData());
+                                objString = new StringBuilder();
+                            }
+                            else if(readLine.matches(endMatch)){
+                                caseNo = 1;
+                                objString.append(readLine.replaceAll("\t", ""));
+                                dataLogger_Obj thisObj = new dataLogger_Obj(objString.toString());
+                                System.out.println(thisObj.getCSVData());
+                                //masterOutput.append(thisObj.getCSVData());
+                                //masterOutput.append("\n");
+                                masterData.add(thisObj.getCSVData());
+                                objString = new StringBuilder();
+                            }
+                            else
+                                objString.append(readLine.replaceAll("\t", "")); // jUST Part of the string                            
+                            break;                            
+                        default:
+                            break;
+                    }
+                }
+                readLine = fileReader.readLine();
+            }while(readLine!=null);            
+            label.setText("Reading Complete");
+            button2.setVisible(TRUE);
+        }
+        catch(IOException IOE){
+            IOE.printStackTrace(System.err);            
+        }
     }
     
+    @FXML
+    private void saveOutput(ActionEvent event){
+        if(masterData.size()>0){
+            FileChooser saveJFC = new FileChooser();
+            saveJFC.setTitle("Select where to save the file");
+            File saveFile = saveJFC.showSaveDialog(new Stage());
+            if(saveFile!=null)
+            try{
+                PrintWriter outWriter = new PrintWriter(new BufferedWriter(
+                                new FileWriter(saveFile)),true);
+                masterData.forEach((n) -> { // <<<<AC1 Code hints update this.
+                    outWriter.println(n);
+                });                
+            }
+            catch(IOException IOE){
+                IOE.printStackTrace(System.err);
+            }
+            label.setText("Saving Complete");
+        }   
+    }
     /**
      * Needs the stupid fucking stage to implement
      * https://docs.oracle.com/javase/8/javafx/api/javafx/stage/FileChooser.html
@@ -87,5 +204,34 @@ public class FXMLDocumentController implements Initializable{
     public void setStage(Stage thisStage){
         parentStage = thisStage;
     }
+    
+        /** 
+        * Taken from the "JAVA For Dummies" Book by Bob Lowe and Barry Burd<br/>
+        * This function gives back a BufferedReader object in which points
+        * to the file provided in the @Name parameter.
+        * 
+        * Updated to have passed a File rather than a String.
+        * 
+        * @param name
+        * @return Bufferedreader
+        */
+       private BufferedReader getReader(File passedFile){
+           BufferedReader in = null;
+           try{               
+               in = new BufferedReader(
+               new FileReader(passedFile));
+           }
+           catch(FileNotFoundException e){
+               System.out.println("The File does not exist");
+               JOptionPane.showMessageDialog(null, "The File does not exist");
+               System.exit(0);
+           }
+           catch(IOException e){
+               System.out.println("I/O Error");
+               JOptionPane.showMessageDialog(null, "I/O Error");
+               System.exit(0);
+           }
+           return in;
+       }
     
 }
