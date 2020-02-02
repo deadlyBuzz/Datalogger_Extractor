@@ -8,7 +8,7 @@
 <AnchorPane id="AnchorPane" prefHeight="118.0" prefWidth="320" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="datalogger_extractor.FXMLDocumentController">
     <children>
         <Button fx:id="button" layoutX="235.0" layoutY="39.0" onAction="#makeItSoAction" text="Make it so" />
-        <Button fx:id="button2" layoutX="235.0" layoutY="75.0" onAction="#saveOutput" prefHeight="25.0" prefWidth="71.0" text="Save" visible="false" />
+        <Button fx:id="button2" layoutX="235.0" layoutY="75.0" onAction="#selectSaveOutput" prefHeight="25.0" prefWidth="71.0" text="Save" visible="false" />
         <Label fx:id="label" layoutX="14.0" layoutY="18.0" minHeight="16" minWidth="69" text="Path:" />
         <TextField fx:id="textField" layoutX="14.0" layoutY="39.0" onMouseClicked="#selectPathAction" prefHeight="25.0" prefWidth="212.0" promptText="Doubleclick here to select L5K File" />
       <Button fx:id="testButton" layoutX="14.0" layoutY="75.0" mnemonicParsing="false" onAction="#testFunctionC" text="test" />

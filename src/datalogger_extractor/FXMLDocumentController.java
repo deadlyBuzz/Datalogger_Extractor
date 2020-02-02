@@ -181,18 +181,16 @@ public class FXMLDocumentController implements Initializable{
      */
     private void selectSaveOutput(ActionEvent event){
         try{
-            FXMLLoader fxmlLoader = FXMLLoader.load(getClass().getResource("FXMLFilterTable.fxml"));
-            Parent root = (Parent)fxmlLoader.load();
-            FXMLFilterTableController controller = fxmlLoader.<FXMLFilterTableController>getController();
-
-            controller.setData(masterData);
-            
-            Scene scene = new Scene(root);
-            
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FXMLFilterTable.fxml"));
+            //Scene scene = new Scene((Pane)fxmlLoader.load());            
+                        
             Stage newStage = new Stage();
-            newStage.setScene(scene);
-            newStage.show();
-            
+            newStage.setScene(new Scene((Pane)fxmlLoader.load()));
+
+            FXMLFilterTableController controller = fxmlLoader.<FXMLFilterTableController>getController();
+            controller.setData(masterData);
+
+            newStage.show();            
         }
         catch(IOException ioe){
             ioe.printStackTrace(System.err);
@@ -255,6 +253,7 @@ public class FXMLDocumentController implements Initializable{
     
     @FXML
     private void testFunctionC(ActionEvent event){
+        //https://stackoverflow.com/questions/14187963/passing-parameters-javafx-fxml
         System.out.println("Test Function C");
         
         Stage stage = new Stage();

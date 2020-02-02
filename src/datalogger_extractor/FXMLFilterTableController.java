@@ -18,12 +18,18 @@ package datalogger_extractor;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 /**
  * FXML Controller class
@@ -33,6 +39,7 @@ import javafx.stage.Stage;
 public class FXMLFilterTableController implements Initializable {
     Stage parentStage;
     ArrayList<dataLogger_Obj> masterData;
+    ObservableList<dataLogger_Obj> tableData;
     //TableView newTableView;
     /**
      * Initializes the controller class.
@@ -50,6 +57,7 @@ public class FXMLFilterTableController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        System.out.println("Initialising");
     }    
     
     /**
@@ -76,6 +84,51 @@ public class FXMLFilterTableController implements Initializable {
      */
     public void setData(ArrayList<dataLogger_Obj> data){
         masterData = new ArrayList<>(data);
+        tableData = FXCollections.observableArrayList(masterData);
+        
+        final ObservableList<dataLogger_FilterObj> tempData = FXCollections.observableArrayList(
+                new dataLogger_FilterObj(true,"dave","daves description"),
+                new dataLogger_FilterObj(true,"gerry","gerrys description"),
+                new dataLogger_FilterObj(true,"brian","brians description"),
+                new dataLogger_FilterObj(true,"mavis","mavis description"));
+        
+        //Not sure what this but its in the demo??!??  Ensemble8
+        StringConverter<Object> sc = new StringConverter<Object>() {
+            @Override
+            public String toString(Object t) {
+                return t == null ? null : t.toString();
+            }
+ 
+            @Override
+            public Object fromString(String string) {
+                return string;
+            }
+        };
+        
+        // Data has now been populated, Build the table        
+        TableColumn selectedCol = new TableColumn<>();
+        selectedCol.setText("Selected");
+        selectedCol.setMinWidth(70);
+        selectedCol.setCellValueFactory(new PropertyValueFactory("Selected"));
+        selectedCol.setCellFactory(CheckBoxTableCell.forTableColumn(selectedCol));
+        
+        TableColumn nameCol = new TableColumn();
+        nameCol.setText("name");
+        nameCol.setCellValueFactory(new PropertyValueFactory("name"));
+        nameCol.setCellFactory(TextFieldTableCell.forTableColumn(sc));
+
+        TableColumn descriptionCol = new TableColumn();
+        descriptionCol.setText("description");
+        descriptionCol.setMinWidth(200);
+        descriptionCol.setCellValueFactory(new PropertyValueFactory("description"));
+        descriptionCol.setCellFactory(TextFieldTableCell.forTableColumn(sc));
+        
+        DataLoggerTableView = new TableView();
+        //DataLoggerTableView.setItems(tableData);
+        DataLoggerTableView.setItems(tempData);
+        DataLoggerTableView.setEditable(true);
+        DataLoggerTableView.getColumns().addAll(selectedCol, nameCol, descriptionCol);
+        
     }
     
     @FXML
@@ -83,7 +136,8 @@ public class FXMLFilterTableController implements Initializable {
      * ActionEvent for when "Make it so" is pressed.
      */
     private void makeItSoButtonAction(ActionEvent event){
-        
+        System.out.println("Make it so pressed - for debug sake.");
+        DataLoggerTableView.refresh();
     }
     
 }
