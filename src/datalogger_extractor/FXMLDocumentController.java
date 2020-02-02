@@ -22,6 +22,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -229,6 +230,27 @@ public class FXMLDocumentController implements Initializable{
 //            ioe.printStackTrace(System.err);
 //        }
         
+    }
+    
+    @FXML
+    private void testFunctionB(ActionEvent event){
+        // A new one because the first one works and I dont want to touch it... EVER.
+        System.out.println("Test function B");
+        Stage stage = new Stage();
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLtest.fxml"));
+            //Parent root = FXMLLoader.load(getClass().getResource("FXMLtest.fxml"));        
+        
+            Scene scene = new Scene((Pane)loader.load());
+
+            stage.setScene(scene);
+            stage.show();
+        
+        }
+        catch(Exception IOE){
+            System.out.println(IOE.getMessage());
+        }
+
     }
     
     /**
