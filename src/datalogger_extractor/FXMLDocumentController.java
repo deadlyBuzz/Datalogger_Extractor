@@ -203,24 +203,21 @@ public class FXMLDocumentController implements Initializable{
     @FXML
     private void testFunction(ActionEvent event){
         // About time I had one of these.
-        
+        //
+        Stage stage = new Stage();
         try{
-            //FXMLLoader fxmlLoader = FXMLLoader.load(getClass().getClassLoader().getResource("FXMLTest.fxml"));
-            //Parent root = (Parent)fxmlLoader.load();
-            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("FXMLTest.fxml"));
-//            FXMLtestController controller = fxmlLoader.<FXMLtestController>getController();
-
-//            controller.setLabelText("This is a label - Set Text from caller");
-            
-            Scene scene = new Scene(root);
-            
-            Stage newStage = new Stage();
-            newStage.setScene(scene);
-            newStage.show();
-            
+        
+            Parent root = FXMLLoader.load(getClass().getResource("FXMLtest.fxml"));
+        
+        
+        Scene scene = new Scene(root);
+        
+        stage.setScene(scene);
+        stage.show();
+        
         }
-        catch(IOException ioe){
-            ioe.printStackTrace(System.err);
+        catch(Exception IOE){
+            System.out.println(IOE.getMessage());
         }
 //        File testFile = new File("file.txt");
 //        try{
