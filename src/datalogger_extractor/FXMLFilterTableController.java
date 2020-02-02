@@ -16,6 +16,7 @@
 package datalogger_extractor;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -31,6 +32,7 @@ import javafx.stage.Stage;
  */
 public class FXMLFilterTableController implements Initializable {
     Stage parentStage;
+    ArrayList<dataLogger_Obj> masterData;
     //TableView newTableView;
     /**
      * Initializes the controller class.
@@ -66,6 +68,14 @@ public class FXMLFilterTableController implements Initializable {
     public void setTableView(TableView tv){
         //newTableView = tv;
         DataLoggerTableView = tv;
+    }
+    
+    /**
+     * Set the data to be filtered and displayed through public access
+     * @param data 
+     */
+    public void setData(ArrayList<dataLogger_Obj> data){
+        masterData = new ArrayList<>(data);
     }
     
     @FXML

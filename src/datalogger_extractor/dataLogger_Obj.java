@@ -6,6 +6,10 @@
 package datalogger_extractor;
 
 import java.util.ArrayList;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 /**
  *  Data Logger Object constructed from String (Or built afterwards)
@@ -18,10 +22,15 @@ public class dataLogger_Obj {
     String objTimeStamps;
     String objDescription;
     public String[] thisData;
-    public dataLogger_Obj(){
-        
-    }
     
+    private final BooleanProperty selected;
+    private final StringProperty name;
+    private final StringProperty description;
+    
+    /**
+     * Constructor - Needs a string representing the whole object
+     * @param buildString 
+     */
     public dataLogger_Obj(String buildString){
         thisBuildString = buildString.replaceAll(";", ""); // Get rid of any trailing semicolons.;        
         objName = thisBuildString.replaceAll("^[0-9]+\\W([a-zA-Z0-9_:]+).*", "$1");
@@ -33,8 +42,21 @@ public class dataLogger_Obj {
         for(int i=0; i<thisData.length; i++){
             thisData[i] = thisData[i].replaceAll("[\\[\\]]", "");
         }
+        
+        this.selected = new SimpleBooleanProperty(true);
+        this.name = new SimpleStringProperty(objName);
+        this.description = new SimpleStringProperty(objDescription);
+        
     }
     
+    public BooleanProperty selectedProperty() {return selected;}
+    public StringProperty nameProperty() {return name;}
+    public StringProperty descriptionProperty() {return description;}
+    
+    /**
+     * Get the Data returned in CSV Row format
+     * @return 
+     */
     public String getCSVData(){
         StringBuilder returnData = new StringBuilder();
         // Data

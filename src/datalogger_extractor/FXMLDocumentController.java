@@ -14,9 +14,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
@@ -37,7 +40,8 @@ public class FXMLDocumentController implements Initializable{
     String findMatch = "^\\t+([a_zA-Z0-9_]+)\\W: udt_AOI_RX1_DataLogger_ResultSet (\\(Description := ([^)]+)\\))?.+";
     String endMatch = "^\\t+[^\\]]+\\]\\];";
     String programName = "^\\t*PROGRAM\\W+([a-zA-Z0-9_]+).+";
-    ArrayList<String> masterData;
+    ArrayList<String> masterStringData;
+    ArrayList<dataLogger_Obj> masterData;
     
     StringBuilder masterOutput = new StringBuilder();
     
@@ -49,6 +53,9 @@ public class FXMLDocumentController implements Initializable{
     
     @FXML 
     private TextField textField; 
+    
+    @FXML
+    private Button testButton;
     
     @FXML
     private void handleButtonAction(ActionEvent event) {
@@ -74,6 +81,7 @@ public class FXMLDocumentController implements Initializable{
             BufferedReader fileReader;
             fileReader = new BufferedReader(new FileReader(l5kFile));
             readLine = fileReader.readLine();            
+            masterStringData = new ArrayList<>();
             masterData = new ArrayList<>();
             
             do{
@@ -112,7 +120,8 @@ public class FXMLDocumentController implements Initializable{
                                 System.out.println(thisObj.getCSVData());
                                 //masterOutput.append(thisObj.getCSVData());
                                 //masterOutput.append("\n");
-                                masterData.add(thisObj.getCSVData());
+                                masterStringData.add(thisObj.getCSVData());
+                                masterData.add(thisObj);
                                 objString = new StringBuilder();
                             }
                             else if(readLine.matches(endMatch)){
@@ -122,7 +131,8 @@ public class FXMLDocumentController implements Initializable{
                                 System.out.println(thisObj.getCSVData());
                                 //masterOutput.append(thisObj.getCSVData());
                                 //masterOutput.append("\n");
-                                masterData.add(thisObj.getCSVData());
+                                masterStringData.add(thisObj.getCSVData());
+                                masterData.add(thisObj);
                                 objString = new StringBuilder();
                             }
                             else
@@ -144,7 +154,7 @@ public class FXMLDocumentController implements Initializable{
     
     @FXML
     private void saveOutput(ActionEvent event){
-        if(masterData.size()>0){
+        if(masterStringData.size()>0){
             FileChooser saveJFC = new FileChooser();
             saveJFC.setTitle("Select where to save the file");
             File saveFile = saveJFC.showSaveDialog(new Stage());
@@ -152,7 +162,7 @@ public class FXMLDocumentController implements Initializable{
             try{
                 PrintWriter outWriter = new PrintWriter(new BufferedWriter(
                                 new FileWriter(saveFile)),true);
-                masterData.forEach((n) -> { // <<<<AC1 Code hints update this.
+                masterStringData.forEach((n) -> { // <<<<AC1 Code hints update this.
                     outWriter.println(n);
                 });                
             }
@@ -162,6 +172,68 @@ public class FXMLDocumentController implements Initializable{
             label.setText("Saving Complete");
         }   
     }
+    
+    @FXML
+    /**
+     * THis is the method run when the Save button should produce a new screen with
+     * a table view
+     */
+    private void selectSaveOutput(ActionEvent event){
+        try{
+            FXMLLoader fxmlLoader = FXMLLoader.load(getClass().getResource("FXMLFilterTable.fxml"));
+            Parent root = (Parent)fxmlLoader.load();
+            FXMLFilterTableController controller = fxmlLoader.<FXMLFilterTableController>getController();
+
+            controller.setData(masterData);
+            
+            Scene scene = new Scene(root);
+            
+            Stage newStage = new Stage();
+            newStage.setScene(scene);
+            newStage.show();
+            
+        }
+        catch(IOException ioe){
+            ioe.printStackTrace(System.err);
+        }
+        
+    }
+    
+    
+    @FXML
+    private void testFunction(ActionEvent event){
+        // About time I had one of these.
+        
+        try{
+            //FXMLLoader fxmlLoader = FXMLLoader.load(getClass().getClassLoader().getResource("FXMLTest.fxml"));
+            //Parent root = (Parent)fxmlLoader.load();
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("FXMLTest.fxml"));
+//            FXMLtestController controller = fxmlLoader.<FXMLtestController>getController();
+
+//            controller.setLabelText("This is a label - Set Text from caller");
+            
+            Scene scene = new Scene(root);
+            
+            Stage newStage = new Stage();
+            newStage.setScene(scene);
+            newStage.show();
+            
+        }
+        catch(IOException ioe){
+            ioe.printStackTrace(System.err);
+        }
+//        File testFile = new File("file.txt");
+//        try{
+//            PrintWriter outWriter = new PrintWriter(new BufferedWriter(new FileWriter(testFile)),true);
+//            outWriter.println("Hey.");
+//            System.out.println("Done");
+//        }
+//        catch(IOException ioe){
+//            ioe.printStackTrace(System.err);
+//        }
+        
+    }
+    
     /**
      * Needs the stupid fucking stage to implement
      * https://docs.oracle.com/javase/8/javafx/api/javafx/stage/FileChooser.html
@@ -205,33 +277,33 @@ public class FXMLDocumentController implements Initializable{
         parentStage = thisStage;
     }
     
-        /** 
-        * Taken from the "JAVA For Dummies" Book by Bob Lowe and Barry Burd<br/>
-        * This function gives back a BufferedReader object in which points
-        * to the file provided in the @Name parameter.
-        * 
-        * Updated to have passed a File rather than a String.
-        * 
-        * @param name
-        * @return Bufferedreader
-        */
-       private BufferedReader getReader(File passedFile){
-           BufferedReader in = null;
-           try{               
-               in = new BufferedReader(
-               new FileReader(passedFile));
-           }
-           catch(FileNotFoundException e){
-               System.out.println("The File does not exist");
-               JOptionPane.showMessageDialog(null, "The File does not exist");
-               System.exit(0);
-           }
-           catch(IOException e){
-               System.out.println("I/O Error");
-               JOptionPane.showMessageDialog(null, "I/O Error");
-               System.exit(0);
-           }
-           return in;
-       }
+    /** 
+    * Taken from the "JAVA For Dummies" Book by Bob Lowe and Barry Burd<br/>
+    * This function gives back a BufferedReader object in which points
+    * to the file provided in the @Name parameter.
+    * 
+    * Updated to have passed a File rather than a String.
+    * 
+    * @param name
+    * @return Bufferedreader
+    */
+    private BufferedReader getReader(File passedFile){
+        BufferedReader in = null;
+        try{               
+            in = new BufferedReader(
+            new FileReader(passedFile));
+        }
+        catch(FileNotFoundException e){
+            System.out.println("The File does not exist");
+            JOptionPane.showMessageDialog(null, "The File does not exist");
+            System.exit(0);
+        }
+//        catch(IOException e){
+//            System.out.println("I/O Error");
+//            JOptionPane.showMessageDialog(null, "I/O Error");
+//            System.exit(0);
+//        }
+        return in;
+    }      
     
 }
