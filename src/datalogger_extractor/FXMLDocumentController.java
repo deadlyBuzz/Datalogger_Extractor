@@ -253,6 +253,30 @@ public class FXMLDocumentController implements Initializable{
 
     }
     
+    @FXML
+    private void testFunctionC(ActionEvent event){
+        System.out.println("Test Function C");
+        
+        Stage stage = new Stage();
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLtest.fxml"));
+            //Parent root = FXMLLoader.load(getClass().getResource("FXMLtest.fxml"));        
+        
+            Scene scene = new Scene((Pane)loader.load());
+
+            FXMLtestController controller = loader.<FXMLtestController>getController(); //<<<< IMPORTANT: loader.load has to be called to instantiate the controller object or it will return a null reference
+            controller.setLabelText("This is a label - Set Text");
+
+            stage.setScene(scene);
+            stage.show();
+        
+        }
+        catch(Exception IOE){
+            System.out.println("Exception:".concat(IOE.getMessage()));
+        }
+
+    }
+    
     /**
      * Needs the stupid fucking stage to implement
      * https://docs.oracle.com/javase/8/javafx/api/javafx/stage/FileChooser.html

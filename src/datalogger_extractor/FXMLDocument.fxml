@@ -11,6 +11,6 @@
         <Button fx:id="button2" layoutX="235.0" layoutY="75.0" onAction="#saveOutput" prefHeight="25.0" prefWidth="71.0" text="Save" visible="false" />
         <Label fx:id="label" layoutX="14.0" layoutY="18.0" minHeight="16" minWidth="69" text="Path:" />
         <TextField fx:id="textField" layoutX="14.0" layoutY="39.0" onMouseClicked="#selectPathAction" prefHeight="25.0" prefWidth="212.0" promptText="Doubleclick here to select L5K File" />
-      <Button fx:id="testButton" layoutX="14.0" layoutY="75.0" mnemonicParsing="false" onAction="#testFunctionB" text="test" />
+      <Button fx:id="testButton" layoutX="14.0" layoutY="75.0" mnemonicParsing="false" onAction="#testFunctionC" text="test" />
     </children>
 </AnchorPane>
