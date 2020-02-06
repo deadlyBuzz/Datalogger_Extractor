@@ -21,6 +21,7 @@ public class dataLogger_Obj {
     String objData;
     String objTimeStamps;
     String objDescription;
+    Boolean objSelected;
     public String[] thisData;
     
     private final BooleanProperty selected;
@@ -34,6 +35,7 @@ public class dataLogger_Obj {
     public dataLogger_Obj(String buildString){
         thisBuildString = buildString.replaceAll(";", ""); // Get rid of any trailing semicolons.;        
         objName = thisBuildString.replaceAll("^[0-9]+\\W([a-zA-Z0-9_:]+).*", "$1");
+        objSelected = false;
         if(thisBuildString.matches("^[^\\(]+\\(Description := \\\"([^\\\"]+)\\\".+"))
             objDescription = thisBuildString.replaceAll("^[^\\(]+\\(Description := \\\"([^\\\"]+)\\\".+", "$1");
         else
@@ -43,7 +45,7 @@ public class dataLogger_Obj {
             thisData[i] = thisData[i].replaceAll("[\\[\\]]", "");
         }
         
-        this.selected = new SimpleBooleanProperty(true);
+        this.selected = new SimpleBooleanProperty(objSelected);
         this.name = new SimpleStringProperty(objName);
         this.description = new SimpleStringProperty(objDescription);
         
@@ -53,6 +55,7 @@ public class dataLogger_Obj {
     public StringProperty nameProperty() {return name;}
     public StringProperty descriptionProperty() {return description;}
     
+    public boolean isSelected() { return selected.get(); }
     /**
      * Get the Data returned in CSV Row format
      * @return 

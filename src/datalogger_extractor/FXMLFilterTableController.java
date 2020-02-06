@@ -18,6 +18,7 @@ package datalogger_extractor;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.lang.Boolean;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -28,6 +29,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -49,10 +51,13 @@ public class FXMLFilterTableController implements Initializable {
     private TableView DataLoggerTableView;
     
     @FXML
-    private Button MakeItSoButton;
+    private Button EngageButton;
     
     @FXML
     private TextField FilterTextField;
+    
+    @FXML
+    private Pane contentPane;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -106,7 +111,7 @@ public class FXMLFilterTableController implements Initializable {
         };
         
         // Data has now been populated, Build the table        
-        TableColumn selectedCol = new TableColumn<>();
+        TableColumn selectedCol = new TableColumn();
         selectedCol.setText("Selected");
         selectedCol.setMinWidth(70);
         selectedCol.setCellValueFactory(new PropertyValueFactory("Selected"));
@@ -123,21 +128,25 @@ public class FXMLFilterTableController implements Initializable {
         descriptionCol.setCellValueFactory(new PropertyValueFactory("description"));
         descriptionCol.setCellFactory(TextFieldTableCell.forTableColumn(sc));
         
-        DataLoggerTableView = new TableView();
+        TableView tableView = new TableView();
         //DataLoggerTableView.setItems(tableData);
-        DataLoggerTableView.setItems(tempData);
-        DataLoggerTableView.setEditable(true);
-        DataLoggerTableView.getColumns().addAll(selectedCol, nameCol, descriptionCol);
-        
+        tableView.setItems(tableData);
+        tableView.setEditable(true);
+        tableView.autosize();
+        tableView.getColumns().addAll(selectedCol, nameCol, descriptionCol);
+        contentPane.getChildren().add(tableView);
     }
     
     @FXML
-    /**
-     * ActionEvent for when "Make it so" is pressed.
-     */
-    private void makeItSoButtonAction(ActionEvent event){
+    private void GenerateOutput(ActionEvent event){
         System.out.println("Make it so pressed - for debug sake.");
-        DataLoggerTableView.refresh();
+        TableView tempData = (TableView)contentPane.getChildren().get(0);
+        ObservableList<dataLogger_Obj> items = tempData.getItems();
+        for(dataLogger_Obj n: items){
+            if(n.isSelected())
+                System.out.println(n.nameProperty().get());
+        }
+        //DataLoggerTableView.refresh();
     }
     
 }
