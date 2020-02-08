@@ -10,6 +10,11 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import static javafx.collections.FXCollections.observableArrayList;
+import javafx.collections.ObservableList;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 
 /**
  *  Data Logger Object constructed from String (Or built afterwards)
@@ -105,5 +110,27 @@ public class dataLogger_Obj {
         }
         
         return returnData;
+    }
+    
+    public LineChart.Series getDataSeries(){
+//        ArrayList<Double> seriesXData = new ArrayList<>();
+//        ArrayList<Double> seriesYData = new ArrayList<>();
+        ArrayList<XYChart.Data<Double, Double>> chartData = new ArrayList<>();        
+        String[] timeStampData = thisData[2].split(",");
+        String[] dataData = thisData[1].split(",");
+        
+        //try{
+            for(int n=1; n<timeStampData.length; n++){
+                chartData.add(new XYChart.Data<>(Double.valueOf(timeStampData[n]), Double.valueOf(dataData[n])));
+//                seriesXData.add(Double.valueOf(timeStampData[n]));
+//                seriesYData.add(Double.valueOf(dataData[n]));
+            }
+        //}
+        //catch(someexception e){
+        // System.err.println(e.getMessage());
+        //}
+        
+          
+           return new LineChart.Series<>(objName, FXCollections.observableArrayList(chartData));               
     }
 }

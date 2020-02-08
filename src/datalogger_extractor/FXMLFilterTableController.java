@@ -91,11 +91,6 @@ public class FXMLFilterTableController implements Initializable {
         masterData = new ArrayList<>(data);
         tableData = FXCollections.observableArrayList(masterData);
         
-        final ObservableList<dataLogger_FilterObj> tempData = FXCollections.observableArrayList(
-                new dataLogger_FilterObj(true,"dave","daves description"),
-                new dataLogger_FilterObj(true,"gerry","gerrys description"),
-                new dataLogger_FilterObj(true,"brian","brians description"),
-                new dataLogger_FilterObj(true,"mavis","mavis description"));
         
         //Not sure what this but its in the demo??!??  Ensemble8
         StringConverter<Object> sc = new StringConverter<Object>() {
@@ -114,7 +109,7 @@ public class FXMLFilterTableController implements Initializable {
         TableColumn selectedCol = new TableColumn();
         selectedCol.setText("Selected");
         selectedCol.setMinWidth(70);
-        selectedCol.setCellValueFactory(new PropertyValueFactory("Selected"));
+        selectedCol.setCellValueFactory(new PropertyValueFactory("selected")); // This is important - "Selected" doesnt work
         selectedCol.setCellFactory(CheckBoxTableCell.forTableColumn(selectedCol));
         
         TableColumn nameCol = new TableColumn();
@@ -132,6 +127,8 @@ public class FXMLFilterTableController implements Initializable {
         //DataLoggerTableView.setItems(tableData);
         tableView.setItems(tableData);
         tableView.setEditable(true);
+        tableView.setPrefHeight(contentPane.getPrefHeight());
+        tableView.setPrefWidth(contentPane.getPrefWidth());
         tableView.autosize();
         tableView.getColumns().addAll(selectedCol, nameCol, descriptionCol);
         contentPane.getChildren().add(tableView);
