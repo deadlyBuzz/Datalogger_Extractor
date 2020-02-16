@@ -6,11 +6,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="datalogger_extractor.FXMLFilterTableController">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="datalogger_extractor.FXMLFilterTableController">
    <children>
-      <Button fx:id="EngageButton" layoutX="489.0" layoutY="31.0" mnemonicParsing="false" onAction="#GenerateOutput" text="Engage" />
+      <Button fx:id="EngageButton" layoutX="519.0" layoutY="31.0" mnemonicParsing="false" onAction="#showChartView" text="Graph" />
       <TextField fx:id="FilterTextField" layoutX="23.0" layoutY="31.0" />
       <Pane fx:id="contentPane" layoutX="25.0" layoutY="67.0" prefHeight="200.0" prefWidth="550.0" />
       <Label layoutX="23.0" layoutY="14.0" text="Filter (Regex)" />
+      <Button fx:id="outputButton" layoutX="457.0" layoutY="31.0" mnemonicParsing="false" onAction="#outputFiltered" text="Output" />
+      <Button layoutX="178.0" layoutY="31.0" mnemonicParsing="false" onAction="#filterTableData" text="Filter" />
+      <Button layoutX="408.0" layoutY="31.0" mnemonicParsing="false" onAction="#saveOutput" text="Save" />
    </children>
 </AnchorPane>
