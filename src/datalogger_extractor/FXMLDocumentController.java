@@ -118,7 +118,7 @@ public class FXMLDocumentController implements Initializable{
                                 caseNo = 0;
                                 //System.out.println(objString.toString());                            
                                 dataLogger_Obj thisObj = new dataLogger_Obj(objString.toString());
-                                System.out.println(thisObj.getCSVData());
+                                //System.out.println(thisObj.getCSVData());
                                 //masterOutput.append(thisObj.getCSVData());
                                 //masterOutput.append("\n");
                                 masterStringData.add(thisObj.getCSVData());
@@ -129,7 +129,7 @@ public class FXMLDocumentController implements Initializable{
                                 caseNo = 1;
                                 objString.append(readLine.replaceAll("\t", ""));
                                 dataLogger_Obj thisObj = new dataLogger_Obj(objString.toString());
-                                System.out.println(thisObj.getCSVData());
+                                //System.out.println(thisObj.getCSVData());
                                 //masterOutput.append(thisObj.getCSVData());
                                 //masterOutput.append("\n");
                                 masterStringData.add(thisObj.getCSVData());

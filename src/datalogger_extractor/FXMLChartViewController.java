@@ -57,17 +57,34 @@ public class FXMLChartViewController implements Initializable {
     
     public void setData(ArrayList<dataLogger_Obj> data){
         displayData = data;
+        int upperTimeBound = 0;
+        int lowerTimeBound = 0; //Integer.MAX_VALUE;
+        int upperDataBound = 0;
+        int lowerDataBound = Integer.MAX_VALUE;
         
-        xAxis = new NumberAxis("Time Stamp", 0, 3, 1);
-        yAxis = new NumberAxis("Values", 0, 3, 1);
         
         //ArrayList<LineChart.Series> thisSeries = new ArrayList<>();
         ObservableList<XYChart.Series<Double,Double>> lineChartData = FXCollections.observableArrayList();
         for(dataLogger_Obj n: displayData){
             lineChartData.add(n.getDataSeries());
+            if(n.getMaxValue()>upperDataBound)
+                upperDataBound = n.getMaxValue();
+            if(n.getMinValue()<lowerDataBound)
+                lowerDataBound = n.getMinValue();
+            if(n.getMaxTimeStamp()>upperTimeBound)
+                upperTimeBound = n.getMaxTimeStamp();
+            if(n.getMinTimeStamp()>lowerTimeBound)
+                lowerTimeBound = n.getMinTimeStamp();
         }
+
+        xAxis = new NumberAxis("Time Stamp", lowerTimeBound, upperTimeBound, 10000);
+        //xAxis = new NumberAxis();
+        //xAxis.setLabel("Time Stamp");
+        yAxis = new NumberAxis("Values", lowerDataBound, upperDataBound, 10000);
+        //yAxis = new NumberAxis();
+        //yAxis.setLabel("Values");
         
-        chart = new LineChart(xAxis, yAxis, lineChartData);
+        chart = new LineChart(xAxis, yAxis, lineChartData);        
         contentPane.getChildren().add(chart);            
     }
     

@@ -15,9 +15,15 @@
  */
 package datalogger_extractor;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.regex.*;
 import java.lang.Boolean;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
@@ -25,11 +31,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -42,6 +51,7 @@ public class FXMLFilterTableController implements Initializable {
     Stage parentStage;
     ArrayList<dataLogger_Obj> masterData;
     ObservableList<dataLogger_Obj> tableData;
+    TableView tableView;
     //TableView newTableView;
     /**
      * Initializes the controller class.
@@ -52,6 +62,9 @@ public class FXMLFilterTableController implements Initializable {
     
     @FXML
     private Button EngageButton;
+    
+    @FXML
+    private Button outputButton;
     
     @FXML
     private TextField FilterTextField;
@@ -123,9 +136,9 @@ public class FXMLFilterTableController implements Initializable {
         descriptionCol.setCellValueFactory(new PropertyValueFactory("description"));
         descriptionCol.setCellFactory(TextFieldTableCell.forTableColumn(sc));
         
-        TableView tableView = new TableView();
+        tableView = new TableView();
         //DataLoggerTableView.setItems(tableData);
-        tableView.setItems(tableData);
+        tableView.setItems(tableData);        
         tableView.setEditable(true);
         tableView.setPrefHeight(contentPane.getPrefHeight());
         tableView.setPrefWidth(contentPane.getPrefWidth());
@@ -144,6 +157,87 @@ public class FXMLFilterTableController implements Initializable {
                 System.out.println(n.nameProperty().get());
         }
         //DataLoggerTableView.refresh();
+    }
+    
+    @FXML
+    private void outputFiltered(ActionEvent event){
+        //System.out.println("Make it so pressed - for debug sake.");
+        TableView tempData = (TableView)contentPane.getChildren().get(0);
+        ObservableList<dataLogger_Obj> items = tempData.getItems();
+        System.out.println("Data,TimeStamp,Diff,Desc");
+        items.stream().filter((n) -> (n.isSelected())).forEachOrdered((n) -> { // Updated from netbeans suggestions.
+            n.getCSVFiltered().forEach((s) -> {
+                System.out.println(s);
+                //System.out.println(n.getCSVData());
+            });
+        });
+    }
+    
+    @FXML
+    private void filterTableData(ActionEvent event){
+        if(FilterTextField.getText().length()>0)
+            try{
+                // Start by checking if the filter is a genuine Regex   
+                Pattern.compile(FilterTextField.getText());
+                ArrayList<dataLogger_Obj> filterArray = new ArrayList<>();
+                for(dataLogger_Obj d: masterData)
+                    if(d.objName.matches(FilterTextField.getText()))
+                        filterArray.add(d);
+                tableView.setItems(FXCollections.observableList(filterArray));
+            }
+            catch(PatternSyntaxException e){
+
+            }
+    }
+    @FXML
+    private void showChartView(ActionEvent event){
+        try{
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FXMLChartView.fxml"));
+            //Scene scene = new Scene((Pane)fxmlLoader.load());            
+                        
+            Stage newStage = new Stage();
+            newStage.setScene(new Scene((Pane)fxmlLoader.load()));
+
+            FXMLChartViewController controller = fxmlLoader.<FXMLChartViewController>getController();
+            ArrayList<dataLogger_Obj> filteredData = new ArrayList<>();
+            for(dataLogger_Obj n: masterData)
+                if(n.isSelected())
+                    filteredData.add(n);
+                
+            controller.setData(filteredData);
+
+            newStage.show();            
+        }
+        catch(IOException ioe){
+            ioe.printStackTrace(System.err);
+        }
+    }
+    
+    @FXML
+    private void saveOutput(ActionEvent event){
+        Pattern.compile(FilterTextField.getText());
+        ArrayList<dataLogger_Obj> filterArray = new ArrayList<>();
+        for(dataLogger_Obj d: masterData)
+            if(d.objName.matches(FilterTextField.getText()))
+                filterArray.add(d);
+
+        if(filterArray.size()>0){
+            FileChooser saveJFC = new FileChooser();
+            saveJFC.setTitle("Select where to save the file");
+            File saveFile = saveJFC.showSaveDialog(new Stage());
+            if(saveFile!=null)
+            try{
+                PrintWriter outWriter = new PrintWriter(new BufferedWriter(
+                                new FileWriter(saveFile)),true);
+                    for(dataLogger_Obj f:filterArray)
+                        for(String s:f.getCSVFiltered())
+                        outWriter.println(s);                                
+            }
+            catch(IOException IOE){
+                IOE.printStackTrace(System.err);
+            }
+            //label.setText("Saving Complete");
+        }   
     }
     
 }

@@ -133,4 +133,67 @@ public class dataLogger_Obj {
           
            return new LineChart.Series<>(objName, FXCollections.observableArrayList(chartData));               
     }
+    
+    public ArrayList<String> getCSVFiltered(){
+        
+        String[] timeStampData = thisData[2].split(",");
+        String[] dataData = thisData[1].split(",");
+        ArrayList<String> returnData = new ArrayList<>();
+        for(int i=0; i<timeStampData.length; i++){
+            returnData.add(dataData[i].concat(",").concat(timeStampData[i]).concat(",\"=OFFSET($A$1,ROW()-1,COLUMN()-2)-IF(ISNUMBER(OFFSET($A$1,ROW()-2,COLUMN()-2)),OFFSET($A$1,ROW()-2,COLUMN()-2),0)\",").concat(this.objDescription));            
+        }
+        
+        return returnData;        
+    }
+    
+    /**
+     * Get the maximum value for this datalogger Object
+     * @return 
+     */
+    public int getMaxValue(){
+        int maxValue = 0;
+        for(String s: thisData[1].split(","))
+            if(Integer.parseInt(s)>maxValue)
+                maxValue = Integer.parseInt(s);
+        return maxValue;
+    }
+    
+    /**
+     * Get the Minimum value for this datalogger Object
+     * @return 
+     */
+    public int getMinValue(){
+        int minValue = Integer.MAX_VALUE;
+        for(String s: thisData[1].split(","))
+            if(Integer.parseInt(s)<minValue)
+                minValue = Integer.parseInt(s);
+        return minValue;
+    }
+
+    /**
+     * Get the maximum timestamp for this datalogger Object
+     * @return 
+     */
+    public int getMaxTimeStamp(){
+        int maxValue = 0;
+        for(String s: thisData[2].split(","))
+            if(Integer.parseInt(s)>maxValue)
+                maxValue = Integer.parseInt(s);
+        return maxValue;
+    }
+
+    /**
+     * Get the minimum value for this datalogger Object
+     * @return 
+     */
+
+    public int getMinTimeStamp(){
+        int minValue = Integer.MAX_VALUE;
+        for(String s: thisData[2].split(","))
+            if(Integer.parseInt(s)<minValue)
+                minValue = Integer.parseInt(s);
+        return minValue;
+    }
+
+    
 }

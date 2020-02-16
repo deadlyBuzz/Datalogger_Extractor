@@ -5,12 +5,11 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171" fx:controller="datalogger_extractor.FXMLChartViewController">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="datalogger_extractor.FXMLChartViewController">
    <children>
       <Button layoutX="509.0" layoutY="14.0" mnemonicParsing="false" text="Show Table" />
       <CheckBox layoutX="23.0" layoutY="18.0" mnemonicParsing="false" text="All Data Only" />
       <Button layoutX="429.0" layoutY="14.0" mnemonicParsing="false" text="Save CSV" />
-      <Pane layoutX="23.0" layoutY="46.0" prefHeight="342.0" prefWidth="563.0" />
+      <Pane fx:id="contentPane" layoutX="23.0" layoutY="46.0" prefHeight="342.0" prefWidth="563.0" />
    </children>
 </AnchorPane>
