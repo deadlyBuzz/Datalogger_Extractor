@@ -38,7 +38,7 @@ public class FXMLDocumentController implements Initializable{
     
     String regexTagMatch = "^[\t]+TAG";
     String regexEndTagMatch = "^[\t]+END_TAG";
-    String findMatch = "^\\t+([a_zA-Z0-9_]+)\\W: udt_AOI_RX1_DataLogger_ResultSet (\\(Description := ([^)]+)\\))?.+";
+    String findMatch = "^\\t+([a-zA-Z0-9_]+)\\W?: udt_AOI_RX1_DataLogger_ResultSet (\\(Description := ([^)]+)\\))?.+";
     String endMatch = "^\\t+[^\\]]+\\]\\];";
     String programName = "^\\t*PROGRAM\\W+([a-zA-Z0-9_]+).+";
     ArrayList<String> masterStringData;
@@ -48,6 +48,9 @@ public class FXMLDocumentController implements Initializable{
     
     @FXML
     private Button button2;
+    
+    @FXML
+    private Button saveButton;
     
     @FXML
     private Label label;
@@ -88,7 +91,7 @@ public class FXMLDocumentController implements Initializable{
             do{
                 if(readLine!=null){
                     lineNumber++;
-//                    if(lineNumber==67564)
+//                    if(lineNumber==137135)
 //                        System.out.println("debug");
                     if(readLine.matches(programName))
                         progName = readLine.replaceAll(programName, "$1").concat(":");
@@ -147,12 +150,14 @@ public class FXMLDocumentController implements Initializable{
             }while(readLine!=null);            
             label.setText("Reading Complete");
             button2.setVisible(TRUE);
+            saveButton.setVisible(TRUE);
+            fileReader.close();
         }
         catch(IOException IOE){
             IOE.printStackTrace(System.err);            
         }
     }
-    
+     
     @FXML
     private void saveOutput(ActionEvent event){
         if(masterStringData.size()>0){
@@ -179,18 +184,19 @@ public class FXMLDocumentController implements Initializable{
      * THis is the method run when the Save button should produce a new screen with
      * a table view
      */
-    private void selectSaveOutput(ActionEvent event){
+    private void selectShowOutput(ActionEvent event){
         try{
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FXMLFilterTable.fxml"));
             //Scene scene = new Scene((Pane)fxmlLoader.load());            
                         
             Stage newStage = new Stage();
-            newStage.setScene(new Scene((Pane)fxmlLoader.load()));
+            newStage.setScene(new Scene((Pane)fxmlLoader.load()));            
 
             FXMLFilterTableController controller = fxmlLoader.<FXMLFilterTableController>getController();
             controller.setData(masterData);
 
             newStage.show();            
+            newStage.setTitle("Select DataLogger");
         }
         catch(IOException ioe){
             ioe.printStackTrace(System.err);
@@ -277,6 +283,34 @@ public class FXMLDocumentController implements Initializable{
     }
     
     /**
+     * Save Data Button action to take the unprocessed datalogger objects only and save them to a separate file.
+     * @param event 
+     */
+    @FXML
+    private void saveData(ActionEvent event){
+        
+        Stage stage = new Stage();
+        
+        try{
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLSaveData.fxml"));
+        Scene scene = new Scene((Pane)loader.load());
+        FXMLSaveDataController controller = loader.<FXMLSaveDataController>getController();
+        
+        controller.setDefaultPath(textField.getText());
+        controller.setData(masterData);
+        
+        stage.setScene(scene);
+        stage.setTitle("Save Data to:");
+        stage.show();
+        
+        }
+        catch(IOException IOE){
+            System.out.println("Error getting SaveData dialog");
+            System.out.println(IOE.getMessage());
+        }
+    }
+    
+    /**
      * Needs the stupid fucking stage to implement
      * https://docs.oracle.com/javase/8/javafx/api/javafx/stage/FileChooser.html
      * Mixed with a little "https://stackoverflow.com/questions/14349001/double-click-is-not-being-caught-by-onmouseevent-javafx2" to manage mouse events
@@ -291,7 +325,7 @@ public class FXMLDocumentController implements Initializable{
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
         fileChooser.getExtensionFilters().addAll(
-         new ExtensionFilter("L5K Files", "*.l5k"));
+         new ExtensionFilter("Available Files", "*.l5k; *.MDL"));
          l5kFile = fileChooser.showOpenDialog(new Stage());
          textField.setText(l5kFile.getPath());
         //*/

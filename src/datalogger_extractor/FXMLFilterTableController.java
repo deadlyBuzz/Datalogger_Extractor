@@ -66,6 +66,9 @@ public class FXMLFilterTableController implements Initializable {
     @FXML
     private Button outputButton;
     
+    @FXML 
+    private Button showButton;
+    
     @FXML
     private TextField FilterTextField;
     
@@ -203,9 +206,15 @@ public class FXMLFilterTableController implements Initializable {
             for(dataLogger_Obj n: masterData)
                 if(n.isSelected())
                     filteredData.add(n);
-                
-            controller.setData(filteredData);
+            /*
+            This does the same - but I cant figure out how it works
+            masterData.stream().filter((n) -> (n.isSelected())).forEachOrdered((n) -> {
+                filteredData.add(n);
+            });
 
+            */    
+            controller.setData(filteredData);
+            newStage.setTitle("Chart View");
             newStage.show();            
         }
         catch(IOException ioe){
@@ -215,10 +224,10 @@ public class FXMLFilterTableController implements Initializable {
     
     @FXML
     private void saveOutput(ActionEvent event){
-        Pattern.compile(FilterTextField.getText());
+        
         ArrayList<dataLogger_Obj> filterArray = new ArrayList<>();
         for(dataLogger_Obj d: masterData)
-            if(d.objName.matches(FilterTextField.getText()))
+            if(d.isSelected())
                 filterArray.add(d);
 
         if(filterArray.size()>0){
@@ -229,15 +238,43 @@ public class FXMLFilterTableController implements Initializable {
             try{
                 PrintWriter outWriter = new PrintWriter(new BufferedWriter(
                                 new FileWriter(saveFile)),true);
-                    for(dataLogger_Obj f:filterArray)
-                        for(String s:f.getCSVFiltered())
-                        outWriter.println(s);                                
+                outWriter.println("Data,TimeStamp,Diff,Description");
+                for(dataLogger_Obj f:filterArray)
+                    for(String s:f.getCSVFiltered())
+                        outWriter.println(s);
+                outWriter.close();
             }
             catch(IOException IOE){
                 IOE.printStackTrace(System.err);
             }
+            
             //label.setText("Saving Complete");
         }   
+    }
+    
+    @FXML
+    private void showData(ActionEvent event){
+        try{ 
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FXMLDataTable.fxml"));
+            //Scene scene = new Scene((Pane)fxmlLoader.load());            
+                        
+            Stage newStage = new Stage();
+            newStage.setTitle("View Data");
+            newStage.setScene(new Scene((Pane)fxmlLoader.load()));
+            FXMLDataTableController controller = fxmlLoader.<FXMLDataTableController>getController();
+            
+            ArrayList<dataLogger_Obj> filteredData = new ArrayList<>();
+            for(dataLogger_Obj n: masterData)
+                if(n.isSelected())
+                    filteredData.add(n);
+
+            controller.setData(filteredData);
+            newStage.show();
+        }
+        catch(IOException ioe){
+            System.out.println(ioe.getMessage());
+        }
+
     }
     
 }

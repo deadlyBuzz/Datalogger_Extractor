@@ -194,6 +194,19 @@ public class dataLogger_Obj {
                 minValue = Integer.parseInt(s);
         return minValue;
     }
+    
+    /**
+     * Get all of the Entries for this DataLogger object in DataloggerTableEntry Format
+     * @return 
+     */
+    public ArrayList<DataloggerTableEntry> getTableEntries(){
+        ArrayList<DataloggerTableEntry> theseEntries = new ArrayList<>();
+        String[] tempData = thisData[1].split(",");
+        String[] tempStamp = thisData[2].split(",");
+            for(int i=0; i<tempData.length; i++)
+                theseEntries.add(new DataloggerTableEntry(tempData[i],tempStamp[i],description.getValueSafe()));
+        return theseEntries;
+    }
 
     
 }

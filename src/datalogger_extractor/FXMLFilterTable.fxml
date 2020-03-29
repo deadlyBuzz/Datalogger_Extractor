@@ -12,8 +12,9 @@
       <TextField fx:id="FilterTextField" layoutX="23.0" layoutY="31.0" />
       <Pane fx:id="contentPane" layoutX="25.0" layoutY="67.0" prefHeight="200.0" prefWidth="550.0" />
       <Label layoutX="23.0" layoutY="14.0" text="Filter (Regex)" />
-      <Button fx:id="outputButton" layoutX="457.0" layoutY="31.0" mnemonicParsing="false" onAction="#outputFiltered" text="Output" />
+      <Button fx:id="outputButton" focusTraversable="false" layoutX="234.0" layoutY="31.0" mnemonicParsing="false" onAction="#outputFiltered" text="Output (Debug)" visible="false" />
       <Button layoutX="178.0" layoutY="31.0" mnemonicParsing="false" onAction="#filterTableData" text="Filter" />
-      <Button layoutX="408.0" layoutY="31.0" mnemonicParsing="false" onAction="#saveOutput" text="Save" />
+      <Button layoutX="469.0" layoutY="31.0" mnemonicParsing="false" onAction="#saveOutput" text="Save" />
+      <Button fx:id="showButton" layoutX="415.0" layoutY="31.0" mnemonicParsing="false" onAction="#showData" text="Show" />
    </children>
 </AnchorPane>
